@@ -32,7 +32,7 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 # loading the dataset to a pandas DataFrame
 news_dataset = pd.read_csv('train.csv')
-#5555
+
 # replacing the null values with empty string
 news_dataset = news_dataset.fillna('')
 
