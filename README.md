@@ -1,1 +1,1 @@
-# MachineLearning-FakeNewsPrediction
+# Machine Learning Fake News Prediction Project
