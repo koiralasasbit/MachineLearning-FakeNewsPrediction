@@ -4,18 +4,23 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import string
 import re
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import nltk
 import contractions
-import nltk
+from sklearn.pipeline import Pipeline
+from sklearn.feature_selection import RFE, RFECV
+from sklearn.svm import SVC
+from time import time
+from pprint import pprint
 
 # disabling SSL check!
 import ssl
@@ -132,4 +137,34 @@ vectorizer.fit(X)
 X = vectorizer.transform(X)
 print(X.shape)
 
+
+#Splitting the dataset to training and test data with the test size data 20 percent and training data size 80 percent
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.2, stratify=Y, random_state=2)
+
+# Training the module:
+# Model Pineline
+# Hyperparameter tuning + Feature Selection + SVM + Crossvalidation
+
+svc = SVC(kernel="linear")
+min_features_to_select = 1  # Minimum number of features to consider
+rfecv = RFECV(
+    estimator=svc,
+    step=1,
+    cv=StratifiedKFold(2),
+    scoring="accuracy",
+    min_features_to_select=min_features_to_select,
+)
+rfecv.fit(X_train, Y_train)
+
+print("Optimal number of features : %d" % rfecv.n_features_)
+
+# Plot number of features VS. cross-validation scores
+plt.figure()
+plt.xlabel("Number of features selected")
+plt.ylabel("Cross validation score (accuracy)")
+plt.plot(
+    range(min_features_to_select, len(rfecv.grid_scores_) + min_features_to_select),
+    rfecv.grid_scores_,
+)
+plt.show()
 
